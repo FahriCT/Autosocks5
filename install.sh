@@ -17,13 +17,9 @@ user.unprivileged: nobody
 
 internal: ens3 port = 1080
 internal: ens4 port = 1080
-internal: ens5 port = 1080
-internal: ens6 port = 1080
 
 external: ens3
 external: ens4
-external: ens5
-external: ens6
 
 clientmethod: none
 socksmethod: username
