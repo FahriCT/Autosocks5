@@ -10,6 +10,16 @@ echo "[+] Memperbarui sistem dan menginstal Dante Server..."
 apt update && apt install -y dante-server
 
 echo "[+] Mengonfigurasi Dante..."
+sudo ip link set ens4 up
+sudo ip link set ens5 up
+sudo ip link set ens6 up
+
+sudo dhclient ens4
+sudo dhclient ens5
+sudo dhclient ens6
+
+
+echo "[+] Mengonfigurasi Dante..."
 cat > /etc/danted.conf <<EOL
 logoutput: syslog
 user.privileged: root
@@ -40,8 +50,7 @@ socks pass {
 EOL
 
 echo "[+] Membuat user SOCKS5 (mimin)..."
-useradd -m mimin -s /bin/false
-echo "mimin:Senvas@12#" | chpasswd
+useradd -m admin -s /bin/false
 
 echo "[+] Memulai dan mengaktifkan Dante Server..."
 systemctl restart danted
@@ -51,3 +60,5 @@ echo "[+] Mengecek status Dante Server..."
 systemctl status danted --no-pager
 
 echo "[✓] Instalasi selesai! SOCKS5 aktif di port 1080"
+
+passwd admin
