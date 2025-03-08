@@ -8,8 +8,9 @@ fi
 
 echo "[+] Memperbarui sistem dan menginstal Dante Server..."
 apt update && apt install -y dante-server
+sudo ufw disable
 
-echo "[+] Mengonfigurasi Dante..."
+echo "[+] Mengaktifkan ens 4,5,6 ..."
 sudo ip link set ens4 up
 sudo ip link set ens5 up
 sudo ip link set ens6 up
