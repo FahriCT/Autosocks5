@@ -90,6 +90,10 @@ EOL
 
 echo "[+] Membuat user SOCKS5 (admin)..."
 useradd -m admin -s /bin/false
+echo "admin:admin" | chpasswd
+echo "[+] User SOCKS5 (admin) berhasil dibuat dengan password 'admin'."
+
+
 
 echo "[+] Memulai dan mengaktifkan Dante Server..."
 systemctl restart danted
@@ -99,5 +103,3 @@ echo "[+] Mengecek status Dante Server..."
 systemctl status danted --no-pager
 
 echo "[✓] Instalasi selesai! SOCKS5 aktif di port 1080"
-
-passwd admin
