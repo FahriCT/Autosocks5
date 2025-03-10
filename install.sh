@@ -6,8 +6,15 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-echo "[+] Membuat File Auto Runing..."
+clear
+echo "======================================"
+echo "      SENVAS AUTO SOCKS INSTALLER     "
+echo "======================================"
+echo ""
+echo "[+] Menginstal..."
 
+# Membuat File Auto Running
+echo "[+] Membuat File Auto Running..."
 cat <<EOF > /etc/systemd/system/network-restart.service
 [Unit]
 Description=Setup network interfaces and restart Dante
@@ -36,28 +43,27 @@ EOF
 
 chmod +x /home/cloudsigma/auto.sh
 
-echo "[+] Reload System ..."
+echo "[+] Reloading SystemD..."
 systemctl daemon-reload
 systemctl enable network-restart
 systemctl start network-restart
 
-echo "[+] Selesai Mereload System"
-
-
+# Instalasi Dante Server
 echo "[+] Memperbarui sistem dan menginstal Dante Server..."
-apt update && apt install -y dante-server
-sudo ufw disable
+apt update -y &> /dev/null && apt install -y dante-server &> /dev/null
+ufw disable &> /dev/null
 
-echo "[+] Mengaktifkan ens 4,5,6 ..."
-sudo ip link set ens4 up
-sudo ip link set ens5 up
-sudo ip link set ens6 up
+# Mengaktifkan Interface
+echo "[+] Mengaktifkan ens4, ens5, ens6..."
+ip link set ens4 up
+ip link set ens5 up
+ip link set ens6 up
 
-sudo dhclient ens4
-sudo dhclient ens5
-sudo dhclient ens6
+dhclient ens4
+dhclient ens5
+dhclient ens6
 
-
+# Konfigurasi Dante
 echo "[+] Mengonfigurasi Dante..."
 cat > /etc/danted.conf <<EOL
 logoutput: syslog
@@ -88,18 +94,27 @@ socks pass {
 }
 EOL
 
+# Membuat User SOCKS5
 echo "[+] Membuat user SOCKS5 (admin)..."
 useradd -m admin -s /bin/false
 echo "admin:admin" | chpasswd
-echo "[+] User SOCKS5 (admin) berhasil dibuat dengan password 'admin'."
 
+echo "[✓] User SOCKS5 'admin' berhasil dibuat dengan password 'admin'."
 
-
+# Memulai Dante Server
 echo "[+] Memulai dan mengaktifkan Dante Server..."
 systemctl restart danted
 systemctl enable danted
 
+# Menampilkan Status
 echo "[+] Mengecek status Dante Server..."
-systemctl status danted --no-pager
+systemctl status danted --no-pager | grep "Active:"
 
-echo "[✓] Instalasi selesai! SOCKS5 aktif di port 1080"
+echo ""
+echo "======================================"
+echo "    SENVAS AUTO SOCKS INSTALLED!      "
+echo "======================================"
+echo "[✓] SOCKS5 Aktif di Port 1080"
+echo "[✓] Username: admin"
+echo "[✓] Password: admin"
+echo "======================================"
