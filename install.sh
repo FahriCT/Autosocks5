@@ -6,6 +6,44 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
+echo "[+] Membuat File Auto Runing..."
+
+cat <<EOF > /etc/systemd/system/network-restart.service
+[Unit]
+Description=Setup network interfaces and restart Dante
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /home/cloudsigma/auto.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat <<EOF > /home/cloudsigma/auto.sh
+#!/bin/bash
+ip link set ens4 up
+ip link set ens5 up
+ip link set ens6 up
+dhclient ens4
+dhclient ens5
+dhclient ens6
+systemctl restart danted
+EOF
+
+chmod +x /home/cloudsigma/auto.sh
+
+echo "[+] Reload System ..."
+systemctl daemon-reload
+systemctl enable network-restart
+systemctl start network-restart
+
+echo "[+] Selesai Mereload System"
+
+
 echo "[+] Memperbarui sistem dan menginstal Dante Server..."
 apt update && apt install -y dante-server
 sudo ufw disable
@@ -50,7 +88,7 @@ socks pass {
 }
 EOL
 
-echo "[+] Membuat user SOCKS5 (mimin)..."
+echo "[+] Membuat user SOCKS5 (admin)..."
 useradd -m admin -s /bin/false
 
 echo "[+] Memulai dan mengaktifkan Dante Server..."
