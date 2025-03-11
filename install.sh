@@ -129,6 +129,6 @@ BEGIN {
 /inet / { 
     split($2, ip, "/")
     if (interface != "") {
-        print interface":1080:admin:admin"
+        print ip[1]":1080:admin:admin"
     }
 }' | sort
