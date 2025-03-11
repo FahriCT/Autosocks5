@@ -105,6 +105,11 @@ echo "[+] Memulai dan mengaktifkan Dante Server..."
 systemctl restart danted &>/dev/null
 systemctl enable danted &>/dev/null
 
+# Menampilkan Status
+echo "[+] Mengecek status Dante Server..."
+systemctl status danted --no-pager | grep "Active:"
+
+
 echo ""
 echo "======================================"
 echo "    SENVAS AUTO SOCKS INSTALLED!      "
