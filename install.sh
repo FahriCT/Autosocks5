@@ -118,3 +118,18 @@ echo "[✓] SOCKS5 Aktif di Port 1080"
 echo "[✓] Username: admin"
 echo "[✓] Password: admin"
 echo "======================================"
+
+ip a | grep -E "ens[0-9]|inet " | grep -v "inet6" | awk '
+BEGIN { 
+    interface="" 
+}
+/ens[0-9]/ { 
+    interface=$2 
+    sub(/:$/, "", interface)
+}
+/inet / { 
+    split($2, ip, "/")
+    if (interface != "") {
+        print interface":1080:admin:admin"
+    }
+}' | sort
