@@ -1,11 +1,6 @@
 #!/bin/bash
 
-# Pastikan skrip dijalankan sebagai root
-if [[ $EUID -ne 0 ]]; then
-   echo "Jalankan skrip sebagai root!" 
-   exit 1
-fi
-
+# filepath: install-socks.sh
 clear
 echo "======================================"
 echo "      SENVAS AUTO SOCKS INSTALLER     "
@@ -13,9 +8,12 @@ echo "======================================"
 echo ""
 echo "[+] Menginstal..."
 
-# Membuat File Auto Running
+# Check root
+[[ $EUID -ne 0 ]] && { echo "Jalankan skrip sebagai root!"; exit 1; }
+
+# Create service file
 echo "[+] Membuat File Auto Running..."
-cat <<EOF > /etc/systemd/system/network-restart.service
+cat > /etc/systemd/system/network-restart.service << 'EEOF' &>/dev/null
 [Unit]
 Description=Setup network interfaces and restart Dante
 After=network-online.target
@@ -28,9 +26,10 @@ RemainAfterExit=yes
 
 [Install]
 WantedBy=multi-user.target
-EOF
+EEOF
 
-cat <<EOF > /home/cloudsigma/auto.sh
+# Create auto script
+cat > /home/cloudsigma/auto.sh << 'EEOF' &>/dev/null
 #!/bin/bash
 ip link set ens4 up
 ip link set ens5 up
@@ -39,33 +38,33 @@ dhclient ens4
 dhclient ens5
 dhclient ens6
 systemctl restart danted
-EOF
+EEOF
 
-chmod +x /home/cloudsigma/auto.sh
+chmod +x /home/cloudsigma/auto.sh &>/dev/null
 
 echo "[+] Reloading SystemD..."
-systemctl daemon-reload
-systemctl enable network-restart
-systemctl start network-restart
+systemctl daemon-reload &>/dev/null
+systemctl enable network-restart &>/dev/null
+systemctl start network-restart &>/dev/null
 
-# Instalasi Dante Server
+# Install Dante Server
 echo "[+] Memperbarui sistem dan menginstal Dante Server..."
-apt update -y &> /dev/null && apt install -y dante-server &> /dev/null
-ufw disable &> /dev/null
+apt update -y &>/dev/null 
+apt install -y dante-server &>/dev/null
+ufw disable &>/dev/null
 
-# Mengaktifkan Interface
+# Enable interfaces
 echo "[+] Mengaktifkan ens4, ens5, ens6..."
-ip link set ens4 up
-ip link set ens5 up
-ip link set ens6 up
+ip link set ens4 up &>/dev/null
+ip link set ens5 up &>/dev/null
+ip link set ens6 up &>/dev/null
+dhclient ens4 &>/dev/null
+dhclient ens5 &>/dev/null
+dhclient ens6 &>/dev/null
 
-dhclient ens4
-dhclient ens5
-dhclient ens6
-
-# Konfigurasi Dante
+# Configure Dante
 echo "[+] Mengonfigurasi Dante..."
-cat > /etc/danted.conf <<EOL
+cat > /etc/danted.conf << 'EEOF' &>/dev/null
 logoutput: syslog
 user.privileged: root
 user.unprivileged: nobody
@@ -92,23 +91,19 @@ socks pass {
     from: 0.0.0.0/0 to: 0.0.0.0/0
     log: connect disconnect
 }
-EOL
+EEOF
 
-# Membuat User SOCKS5
+# Create SOCKS5 user
 echo "[+] Membuat user SOCKS5 (admin)..."
-useradd -m admin -s /bin/false
-echo "admin:admin" | chpasswd
+useradd -m admin -s /bin/false &>/dev/null
+echo "admin:admin" | chpasswd &>/dev/null
 
-echo "[✓] User SOCKS5 'admin' berhasil dibuat dengan password 'admin'."
+echo "[✓] User SOCKS5 'admin' berhasil dibuat dengan password 'admin'"
 
-# Memulai Dante Server
+# Start Dante
 echo "[+] Memulai dan mengaktifkan Dante Server..."
-systemctl restart danted
-systemctl enable danted
-
-# Menampilkan Status
-echo "[+] Mengecek status Dante Server..."
-systemctl status danted --no-pager | grep "Active:"
+systemctl restart danted &>/dev/null
+systemctl enable danted &>/dev/null
 
 echo ""
 echo "======================================"
