@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# filepath: install-socks.sh
+# Clear the screen
 clear
 echo "======================================"
 echo "      SENVAS AUTO SOCKS INSTALLER     "
@@ -8,7 +8,7 @@ echo "======================================"
 echo ""
 echo "[+] Menginstal..."
 
-# Check root
+# Check if the script is run as root
 [[ $EUID -ne 0 ]] && { echo "Jalankan skrip sebagai root!"; exit 1; }
 
 # Create service file
@@ -108,7 +108,6 @@ systemctl enable danted &>/dev/null
 # Menampilkan Status
 echo "[+] Mengecek status Dante Server..."
 systemctl status danted --no-pager | grep "Active:"
-
 
 echo ""
 echo "======================================"
