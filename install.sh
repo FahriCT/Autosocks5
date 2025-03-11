@@ -13,7 +13,7 @@ echo "[+] Menginstal..."
 
 # Create service file
 echo "[+] Membuat File Auto Running..."
-cat > /etc/systemd/system/network-restart.service << 'EEOF' &>/dev/null
+cat > /etc/systemd/system/network-restart.service << 'EEOF'
 [Unit]
 Description=Setup network interfaces and restart Dante
 After=network-online.target
@@ -29,7 +29,7 @@ WantedBy=multi-user.target
 EEOF
 
 # Create auto script
-cat > /home/cloudsigma/auto.sh << 'EEOF' &>/dev/null
+cat > /home/cloudsigma/auto.sh << 'EEOF'
 #!/bin/bash
 ip link set ens4 up
 ip link set ens5 up
@@ -40,7 +40,7 @@ dhclient ens6
 systemctl restart danted
 EEOF
 
-chmod +x /home/cloudsigma/auto.sh &>/dev/null
+chmod +x /home/cloudsigma/auto.sh
 
 echo "[+] Reloading SystemD..."
 systemctl daemon-reload &>/dev/null
@@ -64,7 +64,7 @@ dhclient ens6 &>/dev/null
 
 # Configure Dante
 echo "[+] Mengonfigurasi Dante..."
-cat > /etc/danted.conf << 'EEOF' &>/dev/null
+cat > /etc/danted.conf << 'EEOF'
 logoutput: syslog
 user.privileged: root
 user.unprivileged: nobody
